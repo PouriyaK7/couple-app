@@ -42,6 +42,23 @@ class CoupleService
     }
 
     /**
+     * Update couple infos
+     * @param Model $couple
+     * @param string $title
+     * @param string $description
+     * @param null $date
+     * @return Model|null
+     */
+    public static function update(Model &$couple, string $title, string $description, $date = null): ?Model
+    {
+        $couple->title = $title;
+        $couple->description = $description;
+        $couple->date = $date;
+        $couple->save();
+        return $couple;
+    }
+
+    /**
      * Add partner to existing couple
      * @param string $partnerID
      * @param string $coupleID
