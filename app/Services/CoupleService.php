@@ -55,7 +55,7 @@ class CoupleService
         if (!self::checkAccess($userID, $coupleID)) {
             return false;
         }
-        # Create couple
+        # Add partner
         return (bool)CoupleUser::query()->create([
             'id' => Str::uuid()->toString(),
             'couple_id' => $coupleID,
