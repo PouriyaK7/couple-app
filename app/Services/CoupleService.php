@@ -64,6 +64,13 @@ class CoupleService
         ]);
     }
 
+    /**
+     * Remove partner from a couple
+     * @param string $partnerID
+     * @param string $coupleID
+     * @param string $userID
+     * @return bool
+     */
     public static function removePartner(string $partnerID, string $coupleID, string $userID): bool
     {
         # Check if user has access to remove partner from couple
