@@ -13,13 +13,11 @@ class CoupleService
      * Store new couple in db
      * @param string $title
      * @param string $userID
-     * @param string $partnerID
      * @param string $description
      * @param null $date
-     * @param string|null $nickname
      * @return Model|null
      */
-    public static function create(string $title, string $userID, string $partnerID, string $description, $date = null, string $nickname = null): Model|null
+    public static function create(string $title, string $userID, string $description, $date = null): Model|null
     {
         # Store couple in db and return null on failure
         $couple = Couple::query()->create([
@@ -32,11 +30,6 @@ class CoupleService
         if (empty($couple)) {
             return null;
         }
-
-        # TODO create event for this
-        # Add partners to couple
-        self::addPartner($userID, $couple->id, $userID);
-        self::addPartner($partnerID, $couple->id, $userID, $nickname);
 
         return $couple;
     }
@@ -62,17 +55,11 @@ class CoupleService
      * Add partner to existing couple
      * @param string $partnerID
      * @param string $coupleID
-     * @param string $userID
      * @param string|null $nickname
      * @return bool
      */
-    public static function addPartner(string $partnerID, string $coupleID, string $userID, string $nickname = null): bool
+    public static function addPartner(string $partnerID, string $coupleID, string $nickname = null): bool
     {
-        # Check if user has access to add partner to couple
-        if (!self::checkAccess($userID, $coupleID)) {
-            return false;
-        }
-        # Add partner
         return (bool)CoupleUser::query()->create([
             'id' => Str::uuid()->toString(),
             'couple_id' => $coupleID,
@@ -85,16 +72,10 @@ class CoupleService
      * Remove partner from a couple
      * @param string $partnerID
      * @param string $coupleID
-     * @param string $userID
      * @return bool
      */
-    public static function removePartner(string $partnerID, string $coupleID, string $userID): bool
+    public static function removePartner(string $partnerID, string $coupleID): bool
     {
-        # Check if user has access to remove partner from couple
-        if (!self::checkAccess($userID, $coupleID)) {
-            return false;
-        }
-        # Remove partner
         return CoupleUser::query()->where('couple_id', $coupleID)
             ->where('user_id', $partnerID)
             ->delete();
