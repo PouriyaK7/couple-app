@@ -93,5 +93,18 @@ class CoupleService
             ->where('id', $coupleID)
             ->count();
     }
+
+    /**
+     * Delete couple and its users
+     * @param string $id
+     * @return bool
+     */
+    public static function delete(string $id): bool
+    {
+        # TODO replace this with an internal method of class
+        # Remove all users from couple
+        CoupleUser::query()->where('couple_id', $id)->delete();
+        return Couple::query()->where('id', $id)->delete();
+    }
 }
 
