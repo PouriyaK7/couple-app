@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Couple;
 use App\Models\CoupleUser;
+use App\Repositories\CoupleRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -19,19 +20,7 @@ class CoupleService
      */
     public static function create(string $title, string $userID, string $description, $date = null): Model|null
     {
-        # Store couple in db and return null on failure
-        $couple = Couple::query()->create([
-            'id' => Str::uuid()->toString(),
-            'title' => $title,
-            'user_id' => $userID,
-            'description' => $description,
-            'date' => $date
-        ]);
-        if (empty($couple)) {
-            return null;
-        }
-
-        return $couple;
+        return CoupleRepository::store($title, $userID, $description, $date);
     }
 
     /**
@@ -44,11 +33,7 @@ class CoupleService
      */
     public static function update(Model &$couple, string $title, string $description, $date = null): ?Model
     {
-        $couple->title = $title;
-        $couple->description = $description;
-        $couple->date = $date;
-        $couple->save();
-        return $couple;
+        return CoupleRepository::update($couple, $title, $description, $date);
     }
 
     /**
@@ -60,12 +45,7 @@ class CoupleService
      */
     public static function addPartner(string $partnerID, string $coupleID, string $nickname = null): bool
     {
-        return (bool)CoupleUser::query()->create([
-            'id' => Str::uuid()->toString(),
-            'couple_id' => $coupleID,
-            'user_id' => $partnerID,
-            'nickname' => $nickname
-        ]);
+        return (bool)CoupleRepository::addPartner($coupleID, $partnerID, $nickname);
     }
 
     /**
@@ -76,9 +56,7 @@ class CoupleService
      */
     public static function removePartner(string $partnerID, string $coupleID): bool
     {
-        return CoupleUser::query()->where('couple_id', $coupleID)
-            ->where('user_id', $partnerID)
-            ->delete();
+        return CoupleRepository::removePartner($coupleID, $partnerID);
     }
 
     /**
@@ -89,9 +67,7 @@ class CoupleService
      */
     public static function checkAccess(string $userID, string $coupleID): bool
     {
-        return Couple::query()->where('user_id', $userID)
-            ->where('id', $coupleID)
-            ->count();
+        return CoupleRepository::checkAccess($coupleID, $userID);
     }
 
     /**
@@ -101,10 +77,10 @@ class CoupleService
      */
     public static function delete(string $id): bool
     {
-        # TODO replace this with an internal method of class
-        # Remove all users from couple
-        CoupleUser::query()->where('couple_id', $id)->delete();
-        return Couple::query()->where('id', $id)->delete();
+        # Remove all users from a couple
+        CoupleRepository::removePartners($id);
+
+        return CoupleRepository::delete($id);
     }
 }
 
