@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CoupleRequest;
 use App\Models\Couple;
 use App\Models\CoupleUser;
-use App\Services\CoupleService;
+use App\Repositories\CoupleRepository;
 use Illuminate\Support\Facades\Auth;
 
 class CoupleController extends Controller
@@ -25,7 +25,7 @@ class CoupleController extends Controller
 
     public function edit(string $id)
     {
-        if (!CoupleService::checkAccess(Auth::id(), $id)) {
+        if (!CoupleRepository::checkAccess($id, Auth::id())) {
             abort(403);
         }
 
@@ -42,7 +42,7 @@ class CoupleController extends Controller
         # Get validated data
         $data = $request->validated();
         # Create couple and return error on failure
-        $couple = CoupleService::create($data['title'], Auth::id(), $data['description'], $data['date']);
+        $couple = CoupleRepository::store($data['title'], Auth::id(), $data['description'], $data['date']);
         if (empty($couple)) {
             return 'something went wrong please try again later';
         }
@@ -61,14 +61,15 @@ class CoupleController extends Controller
         $data = $request->validated();
 
         $couple = Couple::query()->find($id);
-        CoupleService::update($couple, $data['title'], $data['description'], $data['date']);
+        CoupleRepository::update($couple, $data['title'], $data['description'], $data['date']);
 
         return $couple;
     }
 
     public function delete(string $id)
     {
-        CoupleService::delete($id);
+        CoupleRepository::delete($id);
+        CoupleRepository::removePartners($id);
         return 'deleted successfully';
     }
 }
