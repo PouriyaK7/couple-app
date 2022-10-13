@@ -43,4 +43,9 @@ class AccountRepository
     {
         return Account::query()->where('id', $id)->transactions;
     }
+
+    public static function checkAccess(string $id, string $userID): bool
+    {
+        return Account::query()->where('user_id', $userID)->where('id', $id)->count() == 1;
+    }
 }
