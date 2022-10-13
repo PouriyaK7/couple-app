@@ -32,13 +32,6 @@ class AccountRepository
         return Account::query()->where('id', $id)->delete();
     }
 
-    public static function sumBalance(Account &$account, int $amount): int
-    {
-        $account->balance += $amount;
-        $account->save();
-        return $account->balance;
-    }
-
     public static function transactions(string $id): Collection
     {
         return Account::query()->where('id', $id)->transactions;
