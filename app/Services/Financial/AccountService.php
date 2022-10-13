@@ -3,6 +3,7 @@
 namespace App\Services\Financial;
 
 use App\Models\Account;
+use App\Repositories\Financial\AccountRepository;
 
 class AccountService
 {
@@ -11,9 +12,8 @@ class AccountService
         return Account::query()->where('user_id', $userID)->where('id', $id)->count() == 1;
     }
 
-    public static function changeBalance(Account &$account, int $amount): bool
+    public static function changeBalance(Account &$account, int $amount): int
     {
-        $account->balance += $amount;
-        return $account->save();
+        return AccountRepository::sumBalance($account, $amount);
     }
 }
