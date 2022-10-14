@@ -6,9 +6,8 @@ use App\Events\UpdateTransactionEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TransactionRequest;
 use App\Models\Transaction;
+use App\Repositories\Financial\AccountRepository;
 use App\Repositories\Financial\TransactionRepository;
-use App\Services\Financial\AccountService;
-use App\Services\Financial\TransactionService;
 use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
@@ -17,7 +16,7 @@ class TransactionController extends Controller
     {
         # TODO check if can we put this in validator file
         # Check if user has access to bank account
-        if (!AccountService::checkAccess($request->account_id, Auth::id())) {
+        if (!AccountRepository::checkAccess($request->account_id, Auth::id())) {
             return 'access denied';
         }
 
@@ -47,7 +46,7 @@ class TransactionController extends Controller
         }
 
         # Return error on access denial
-        if (!TransactionService::checkAccess($id, Auth::id())) {
+        if (!TransactionRepository::checkAccess($id, Auth::id())) {
             return 'access denied';
         }
 
@@ -78,7 +77,7 @@ class TransactionController extends Controller
         }
 
         # Return error on access denial
-        if (!TransactionService::checkAccess($id, Auth::id())) {
+        if (!TransactionRepository::checkAccess($id, Auth::id())) {
             return 'access denied';
         }
 
