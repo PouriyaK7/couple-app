@@ -11,6 +11,7 @@ class Transaction extends Model
     use HasFactory;
 
     protected $guarded = [];
+    public $incrementing = false;
 
     public function account(): BelongsTo
     {
