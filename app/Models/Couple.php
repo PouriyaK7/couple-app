@@ -12,6 +12,7 @@ class Couple extends Model
 
     protected $guarded = [];
     protected $appends = ['categories'];
+    public $incrementing = false;
 
     public function getCategoriesAttribute(): Collection
     {
