@@ -12,6 +12,7 @@ class Plan extends Model
     use HasFactory;
 
     protected $guarded = [];
+    public $incrementing = false;
 
     public function user(): BelongsTo
     {
