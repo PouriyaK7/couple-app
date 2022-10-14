@@ -12,6 +12,7 @@ class Account extends Model
     use HasFactory;
 
     protected $guarded = [];
+    public $incrementing = false;
 
     public function transactions(): HasMany
     {
