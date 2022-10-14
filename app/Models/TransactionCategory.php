@@ -11,6 +11,7 @@ class TransactionCategory extends Model
     use HasFactory;
 
     protected $guarded = [];
+    public $incrementing = false;
 
     public function couple(): BelongsTo
     {
