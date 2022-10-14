@@ -44,11 +44,8 @@ class TransactionController extends Controller
         if (empty($transaction)) {
             return 'not found';
         }
-
-        # Return error on access denial
-        if (!TransactionRepository::checkAccess($id, Auth::id())) {
-            return 'access denied';
-        }
+        # Check if user has access to transaction
+        $this->authorize('access', $transaction);
 
         # Get old transaction amount
         $amount = $transaction->amount;
@@ -75,11 +72,8 @@ class TransactionController extends Controller
         if (empty($transaction)) {
             return 'not found';
         }
-
-        # Return error on access denial
-        if (!TransactionRepository::checkAccess($id, Auth::id())) {
-            return 'access denied';
-        }
+        # Check if user has access to transaction
+        $this->authorize('access', $transaction);
 
         # Reverse transaction amount
         $transaction->amount = -$transaction->amount;
