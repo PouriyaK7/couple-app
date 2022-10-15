@@ -25,11 +25,10 @@ class CoupleController extends Controller
 
     public function edit(string $id)
     {
-        if (!CoupleRepository::checkAccess($id, Auth::id())) {
-            abort(403);
-        }
-
         $couple = Couple::query()->find($id);
+
+        $this->authorize('access', $couple);
+
         return view('hello', compact('couple'));
     }
 
@@ -61,6 +60,9 @@ class CoupleController extends Controller
         $data = $request->validated();
 
         $couple = Couple::query()->find($id);
+
+        $this->authorize('access', $couple);
+
         CoupleRepository::update($couple, $data['title'], $data['description'], $data['date']);
 
         return $couple;
@@ -68,6 +70,13 @@ class CoupleController extends Controller
 
     public function delete(string $id)
     {
+        $couple = Couple::query()->find($id);
+        if (empty($couple)) {
+            abort(404);
+        }
+
+        $this->authorize('access', $couple);
+
         CoupleRepository::delete($id);
         CoupleRepository::removePartners($id);
         return 'deleted successfully';
