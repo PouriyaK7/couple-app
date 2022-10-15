@@ -12,26 +12,46 @@ use Illuminate\Support\Facades\Auth;
 
 class CoupleController extends Controller
 {
+    /**
+     * Get all user couples
+     * @return \Illuminate\Support\Collection
+     */
     public function index()
     {
         return CoupleUser::query()->where('user_id', Auth::id())->pluck('couple_id');
     }
 
+    /**
+     * Take user to create couple form
+     * @return \Illuminate\Contracts\View\View
+     */
     public function create()
     {
         return view('hello');
     }
 
+    /**
+     * Take user to edit couple form
+     * @param string $id
+     * @return \Illuminate\Contracts\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function edit(string $id)
     {
+        # Fetch couple from database and check if it exists
         $couple = Couple::query()->find($id);
+        if (empty($couple)) {
+            abort(404);
+        }
 
+        # Check if user has access to couple
         $this->authorize('access', $couple);
 
         return view('hello', compact('couple'));
     }
 
     /**
+     * Store couple in db
      * @param CoupleRequest $request
      * @return \Illuminate\Database\Eloquent\Model|string
      */
@@ -54,28 +74,51 @@ class CoupleController extends Controller
         return $couple;
     }
 
+    /**
+     * Update existing couple
+     * @param CoupleRequest $request
+     * @param string $id
+     * @return Couple|null
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function update(CoupleRequest $request, string $id)
     {
+        # Get validated data from request
         $data = $request->validated();
 
-        $couple = Couple::query()->find($id);
-
-        $this->authorize('access', $couple);
-
-        CoupleRepository::update($couple, $data['title'], $data['description'], $data['date']);
-
-        return $couple;
-    }
-
-    public function delete(string $id)
-    {
+        # Fetch couple from database and check if exists
         $couple = Couple::query()->find($id);
         if (empty($couple)) {
             abort(404);
         }
 
+        # Check if user has access to couple
         $this->authorize('access', $couple);
 
+        # Update couple
+        CoupleRepository::update($couple, $data['title'], $data['description'], $data['date']);
+
+        return $couple;
+    }
+
+    /**
+     * Delete couple from db
+     * @param string $id
+     * @return string
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function delete(string $id)
+    {
+        # Fetch couple from db and check if exists
+        $couple = Couple::query()->find($id);
+        if (empty($couple)) {
+            abort(404);
+        }
+
+        # Check if user has access to couple
+        $this->authorize('access', $couple);
+
+        # Delete couple and its partners from it
         CoupleRepository::delete($id);
         CoupleRepository::removePartners($id);
         return 'deleted successfully';
