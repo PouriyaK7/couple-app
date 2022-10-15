@@ -26,7 +26,8 @@ class PlanItemRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'min:1'],
             'description' => ['nullable', 'string', 'min:1'],
-            'due_date' => ['nullable', 'string', 'min:1']
+            'due_date' => ['nullable', 'string', 'min:1'],
+            'plan_id' => ['required', 'string', 'exists:plans,id']
         ];
     }
 }
