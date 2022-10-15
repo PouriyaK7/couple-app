@@ -14,8 +14,7 @@ class CoupleController extends Controller
 {
     public function index()
     {
-        $couples = CoupleUser::query()->where('user_id', Auth::id())->pluck('couple_id');
-        return $couples;
+        return CoupleUser::query()->where('user_id', Auth::id())->pluck('couple_id');
     }
 
     public function create()
