@@ -67,4 +67,19 @@ class PlanItemRepository
     {
         return PlanItem::query()->where('id', $id)->delete();
     }
+
+    /**
+     * Toggle done status of plan item
+     * @param PlanItem $item
+     * @return bool
+     */
+    public static function toggleDone(PlanItem &$item): bool
+    {
+        if (isset($item->done_at)) {
+            $item->done_at = null;
+        } else {
+            $item->done_at = now();
+        }
+        return $item->save();
+    }
 }
